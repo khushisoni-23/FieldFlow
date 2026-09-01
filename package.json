@@ -1,0 +1,15 @@
+{
+  "name": "fieldflow-project",
+  "version": "1.0.0",
+  "description": "FieldFlow Field Service Management SaaS - Monorepo Root",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently --kill-others-on-fail --names \"BACKEND,FRONTEND\" --prefix-colors \"cyan,magenta\" \"npm --prefix \\\"fieldflow backend\\\" run dev\" \"npm --prefix \\\"FieldFlow frontend\\\" run dev\"",
+    "dev:backend": "npm --prefix \"fieldflow backend\" run dev",
+    "dev:frontend": "npm --prefix \"FieldFlow frontend\" run dev",
+    "install:all": "npm install && npm --prefix \"fieldflow backend\" install && npm --prefix \"FieldFlow frontend\" install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}
