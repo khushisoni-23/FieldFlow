@@ -1,9 +1,12 @@
 import axios from 'axios';
 
-// API URL: Uses VITE_API_URL env var. Set this to your Vercel backend URL in production.
-// Locally defaults to http://localhost:5001/api
+// API URL: When deployed on Vercel together, uses same-origin '/api'.
+// Can be overridden via VITE_API_URL, or defaults to local backend port 5001.
+const isVercel = typeof window !== 'undefined' && window.location.hostname.includes('vercel.app');
+const defaultBaseURL = isVercel ? '/api' : 'http://localhost:5001/api';
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5001/api',
+  baseURL: import.meta.env.VITE_API_URL || defaultBaseURL,
   headers: {
     'Content-Type': 'application/json',
   },

@@ -7,7 +7,10 @@
     "dev": "concurrently --kill-others-on-fail --names \"BACKEND,FRONTEND\" --prefix-colors \"cyan,magenta\" \"npm --prefix \\\"fieldflow backend\\\" run dev\" \"npm --prefix \\\"FieldFlow frontend\\\" run dev\"",
     "dev:backend": "npm --prefix \"fieldflow backend\" run dev",
     "dev:frontend": "npm --prefix \"FieldFlow frontend\" run dev",
-    "install:all": "npm install && npm --prefix \"fieldflow backend\" install && npm --prefix \"FieldFlow frontend\" install"
+    " install:all": "npm install && npm --prefix \"fieldflow backend\" install && npm --prefix \"FieldFlow frontend\" install",
+    "build:backend": "npm --prefix \"fieldflow backend\" run build",
+    "build:frontend": "npm --prefix \"FieldFlow frontend\" run build",
+    "build": "npm run build:backend && npm run build:frontend"
   },
   "devDependencies": {
     "concurrently": "^9.0.0"
