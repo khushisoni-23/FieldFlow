@@ -10,17 +10,17 @@ const options = {
       description: 'Comprehensive REST API documentation for the FieldFlow Field Service Management SaaS platform.\n\n### Authentication\nMost endpoints require JWT Bearer Authentication. Obtain a token via `/api/auth/login` or `/api/auth/register` and click the **Authorize** button above to supply `Bearer <token>`.',
       contact: {
         name: 'FieldFlow Support',
-        url: 'https://field-flow-nine.vercel.app'
+        url: 'https://field-flow-pi.vercel.app'
       }
     },
     servers: [
       {
-        url: process.env.SWAGGER_SERVER_URL || `http://localhost:${process.env.PORT || 5001}`,
-        description: 'Current API Server'
+        url: 'https://field-flow-pi.vercel.app',
+        description: 'Live Production Server'
       },
       {
-        url: 'https://fieldflow-backend.vercel.app',
-        description: 'Production Vercel Deployment'
+        url: process.env.SWAGGER_SERVER_URL || `http://localhost:${process.env.PORT || 5001}`,
+        description: 'Current API Server'
       },
       {
         url: 'http://localhost:5001',

@@ -21,6 +21,7 @@ const app = express();
 
 // CORS configuration - dynamic origin validation supporting local development and Vercel deployments
 const allowedOrigins = [
+  'https://field-flow-pi.vercel.app',
   'https://field-flow-nine.vercel.app',
   'http://localhost:5173',
   'http://localhost:5174',
@@ -71,10 +72,15 @@ if (process.env.NODE_ENV !== 'test') {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Swagger UI API Documentation
+// Swagger UI API Documentation Configuration
 const swaggerUiOptions = {
   customSiteTitle: 'FieldFlow API Documentation',
   customCss: '.swagger-ui .topbar { display: none }',
+  customCssUrl: 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui.min.css',
+  customJs: [
+    'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui-bundle.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui-standalone-preset.js'
+  ],
   swaggerOptions: {
     persistAuthorization: true,
     displayRequestDuration: true,
@@ -83,6 +89,7 @@ const swaggerUiOptions = {
 };
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
 
 // Raw OpenAPI JSON Specification Endpoint
 app.get('/api-docs.json', (req, res) => {
