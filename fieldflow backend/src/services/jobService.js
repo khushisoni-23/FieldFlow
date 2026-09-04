@@ -345,7 +345,8 @@ const jobService = {
       throw err;
     }
 
-    const { method, amount } = paymentData;
+    const method = paymentData.paymentMethod || paymentData.method || 'UPI';
+    const amount = Number(paymentData.amount || 0);
 
     // Update job payment states
     const updatedTimeline = [
@@ -541,6 +542,17 @@ const jobService = {
     updates.timeline = updatedTimeline;
 
     return await jobRepository.update(id, updates);
+  },
+
+  delete: async (id) => {
+    const job = await jobRepository.findById(id);
+    if (!job) {
+      const err = new Error(`Job with ID ${id} not found`);
+      err.status = 404;
+      throw err;
+    }
+    await jobRepository.delete(id);
+    return { success: true, message: `Job ${id} deleted` };
   }
 };
 

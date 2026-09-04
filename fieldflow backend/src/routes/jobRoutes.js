@@ -16,5 +16,6 @@ router.post('/:id/payment', jobValidator.payment, validationHandler, jobControll
 router.post('/:id/assign', jobValidator.assign, validationHandler, jobController.assign);
 router.post('/:id/parts', jobController.addPart);
 router.post('/:id/photos', jobController.uploadPhotos);
+router.delete('/:id', jobController.delete);
 
 module.exports = router;

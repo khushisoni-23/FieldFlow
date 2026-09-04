@@ -84,6 +84,15 @@ const jobController = {
     } catch (error) {
       next(error);
     }
+  },
+
+  delete: async (req, res, next) => {
+    try {
+      const result = await jobService.delete(req.params.id);
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
   }
 };
 

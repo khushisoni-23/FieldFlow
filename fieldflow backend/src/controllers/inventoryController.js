@@ -48,8 +48,7 @@ const inventoryController = {
 
   updateStock: async (req, res, next) => {
     try {
-      const { stockCount } = req.body;
-      const part = await inventoryService.updateStock(req.params.id, stockCount);
+      const part = await inventoryService.updateStock(req.params.id, req.body.stockCount !== undefined ? req.body.stockCount : req.body);
       res.json(part);
     } catch (error) {
       next(error);

@@ -15,24 +15,52 @@ const inventoryService = {
     return part;
   },
 
-  create: async (partData) => {
+  create: async (rawPartData) => {
+    const partName = rawPartData.partName || rawPartData.name || 'Unnamed Part';
+    const category = rawPartData.category || 'General';
+    const stock = Number(rawPartData.stock ?? rawPartData.quantity ?? 0);
+    const minStock = Number(rawPartData.minStock ?? rawPartData.reorderLevel ?? 5);
+    const price = Number(rawPartData.price ?? rawPartData.unitPrice ?? 0);
+    const sku = rawPartData.sku || `SKU-${category.substring(0, 3).toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const partData = {
+      ...rawPartData,
+      partName,
+      name: partName,
+      category,
+      stock,
+      quantity: stock,
+      minStock,
+      reorderLevel: minStock,
+      price,
+      unitPrice: price,
+      sku
+    };
+
     // Check if SKU exists
-    const existing = await inventoryRepository.findBySku(partData.sku);
+    const existing = await inventoryRepository.findBySku(sku);
     if (existing) {
-      const err = new Error(`SKU ${partData.sku} is already in use`);
-      err.status = 409;
-      throw err;
+      // Auto-adjust SKU instead of failing
+      partData.sku = `${sku}-${Math.floor(100 + Math.random() * 900)}`;
     }
+
     return await inventoryRepository.create(partData);
   },
 
-  update: async (id, partData) => {
+  update: async (id, rawPartData) => {
     const part = await inventoryRepository.findById(id);
     if (!part) {
       const err = new Error(`Inventory item with ID ${id} not found`);
       err.status = 404;
       throw err;
     }
+
+    const partData = { ...rawPartData };
+    if (rawPartData.name && !rawPartData.partName) partData.partName = rawPartData.name;
+    if (rawPartData.quantity !== undefined && rawPartData.stock === undefined) partData.stock = Number(rawPartData.quantity);
+    if (rawPartData.unitPrice !== undefined && rawPartData.price === undefined) partData.price = Number(rawPartData.unitPrice);
+    if (rawPartData.reorderLevel !== undefined && rawPartData.minStock === undefined) partData.minStock = Number(rawPartData.reorderLevel);
+
     return await inventoryRepository.update(id, partData);
   },
 
@@ -44,17 +72,33 @@ const inventoryService = {
       throw err;
     }
     await inventoryRepository.delete(id);
-    return { success: true };
+    return { success: true, message: `Part ${id} deleted` };
   },
 
-  updateStock: async (id, stockCount) => {
+  updateStock: async (id, stockData) => {
     const part = await inventoryRepository.findById(id);
     if (!part) {
       const err = new Error(`Inventory item with ID ${id} not found`);
       err.status = 404;
       throw err;
     }
-    return await inventoryRepository.update(id, { stock: stockCount });
+
+    let newStock;
+    if (typeof stockData === 'object' && stockData !== null) {
+      if (stockData.quantityChange !== undefined) {
+        newStock = Math.max(0, part.stock + Number(stockData.quantityChange));
+      } else if (stockData.stockCount !== undefined) {
+        newStock = Math.max(0, Number(stockData.stockCount));
+      } else if (stockData.quantity !== undefined) {
+        newStock = Math.max(0, Number(stockData.quantity));
+      } else {
+        newStock = part.stock;
+      }
+    } else {
+      newStock = Math.max(0, Number(stockData));
+    }
+
+    return await inventoryRepository.update(id, { stock: newStock });
   },
 
   deduct: async (id, quantity) => {
@@ -65,8 +109,7 @@ const inventoryService = {
       throw err;
     }
     
-    // Deducts, floors at 0
-    const newStock = Math.max(0, part.stock - quantity);
+    const newStock = Math.max(0, part.stock - Number(quantity));
     return await inventoryRepository.update(id, { stock: newStock });
   }
 };

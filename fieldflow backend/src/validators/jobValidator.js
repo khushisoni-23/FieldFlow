@@ -76,10 +76,12 @@ const jobValidator = {
   ],
 
   payment: [
-    body('method')
-      .trim()
-      .notEmpty()
-      .withMessage('Payment method is required'),
+    body(['method', 'paymentMethod'])
+      .custom((value, { req }) => {
+        const method = req.body.method || req.body.paymentMethod;
+        if (!method || !method.trim()) throw new Error('Payment method is required');
+        return true;
+      }),
     body('amount')
       .isNumeric()
       .withMessage('Amount must be a number')
