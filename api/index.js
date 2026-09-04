@@ -1,6 +1,20 @@
 // Root Vercel Serverless Entry Point for FieldFlow Backend API
-// When deploying the entire repo to Vercel, this serverless function handles all /api/* requests.
-require('dotenv').config();
+// Resolve all backend dependencies from fieldflow backend/node_modules
+const path = require('path');
+const backendModules = path.resolve(__dirname, '../fieldflow backend/node_modules');
+
+if (process.env.NODE_PATH) {
+  process.env.NODE_PATH += (path.delimiter + backendModules);
+} else {
+  process.env.NODE_PATH = backendModules;
+}
+require('module')._initPaths();
+
+// Load environment variables
+const dotenv = require('dotenv');
+dotenv.config();
+
+// DNS resolution for MongoDB Atlas SRV
 const dns = require('dns');
 try { dns.setServers(['8.8.8.8', '8.8.4.4']); } catch(e){}
 
