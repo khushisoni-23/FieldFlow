@@ -2,6 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+const swaggerUi = require('swagger-ui-express');
+const { swaggerSpec } = require('./config/swagger');
 const errorHandler = require('./middleware/errorHandler');
 
 // Route Imports
@@ -69,18 +71,85 @@ if (process.env.NODE_ENV !== 'test') {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Root API Welcome / Status
+// Swagger UI API Documentation
+const swaggerUiOptions = {
+  customSiteTitle: 'FieldFlow API Documentation',
+  customCss: '.swagger-ui .topbar { display: none }',
+  swaggerOptions: {
+    persistAuthorization: true,
+    displayRequestDuration: true,
+    docExpansion: 'list'
+  }
+};
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
+
+// Raw OpenAPI JSON Specification Endpoint
+app.get('/api-docs.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
+
+/**
+ * @swagger
+ * tags:
+ *   name: System
+ *   description: Root status and server health checks
+ */
+
+/**
+ * @swagger
+ * /:
+ *   get:
+ *     summary: Root API Welcome & Status
+ *     description: Returns basic API status, version information, and documentation links.
+ *     tags: [System]
+ *     responses:
+ *       200:
+ *         description: API status details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 name: { type: string, example: 'FieldFlow Backend API' }
+ *                 status: { type: string, example: 'online' }
+ *                 version: { type: string, example: '1.0.0' }
+ *                 documentation: { type: string, example: '/api-docs' }
+ *                 timestamp: { type: string, format: 'date-time' }
+ */
 app.get('/', (req, res) => {
   res.json({
     name: 'FieldFlow Backend API',
     status: 'online',
     version: '1.0.0',
-    documentation: '/api/health',
+    documentation: '/api-docs',
     timestamp: new Date().toISOString()
   });
 });
 
-// Health Check API
+/**
+ * @swagger
+ * /api/health:
+ *   get:
+ *     summary: Health Check API
+ *     description: Checks server and MongoDB database connection status.
+ *     tags: [System]
+ *     responses:
+ *       200:
+ *         description: Server health and database connection status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 message: { type: string, example: 'FieldFlow API is running' }
+ *                 database: { type: string, example: 'connected' }
+ *                 dbConnected: { type: boolean, example: true }
+ *                 environment: { type: string, example: 'development' }
+ *                 timestamp: { type: string, format: 'date-time' }
+ */
 app.get('/api/health', (req, res) => {
   const mongoose = require('mongoose');
   const dbState = mongoose.connection.readyState;
