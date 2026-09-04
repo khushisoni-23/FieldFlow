@@ -7,7 +7,7 @@ import Select from '../../components/Select';
 import Modal from '../../components/Modal';
 
 const AdminTechnicians = () => {
-  const { technicians, addTechnician, deleteTechnician, jobs, t } = useContext(AppContext);
+  const { technicians = [], addTechnician, deleteTechnician, jobs = [], t, loading } = useContext(AppContext);
 
   // UI state
   const [searchQuery, setSearchQuery] = useState('');
@@ -23,11 +23,12 @@ const AdminTechnicians = () => {
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
-  // Form State
+  // Form State & Validation
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [specialization, setSpecialization] = useState('AC Repair');
+  const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState('');
 
   const handleAddTech = async (e) => {
@@ -89,10 +90,13 @@ const AdminTechnicians = () => {
 
   // Helper: Count active jobs for a technician
   const getActiveJobsCount = (techId) => {
-    return jobs.filter(j => j.technicianId === techId && ['assigned', 'on the way', 'arrived', 'in progress'].includes(j.status.toLowerCase())).length;
+    if (!Array.isArray(jobs)) return 0;
+    return jobs.filter(j => j && j.technicianId === techId && ['assigned', 'on the way', 'arrived', 'in progress'].includes((j.status || '').toLowerCase())).length;
   };
 
-  const filteredTechs = technicians.filter(tech => {
+  const safeTechList = Array.isArray(technicians) ? technicians : [];
+  const filteredTechs = safeTechList.filter(tech => {
+    if (!tech) return false;
     const query = searchQuery.trim().toLowerCase();
     if (!query) return true;
     return (
