@@ -1,7 +1,7 @@
 import api from './api';
+import { USE_API } from './config';
 import { mockUsers } from '../data/mockData';
 
-const USE_API = import.meta.env.VITE_USE_API === 'true';
 const STORAGE_KEY = 'ff_mock_users';
 
 // Initialize localStorage with mockData if not present
@@ -37,11 +37,12 @@ export const authService = {
   register: async (userData) => {
     if (USE_API) {
       const response = await api.post('/auth/register', userData);
-      return response.data;
+      const registeredUser = response.data.user || response.data;
+      return { success: true, user: registeredUser };
     } else {
       const users = getMockUsers();
       if (users.find(u => u.email.toLowerCase() === userData.email.toLowerCase())) {
-        return Promise.reject(new Error('User already exists.'));
+        return Promise.reject(new Error('Email address is already registered.'));
       }
 
       const newUser = {

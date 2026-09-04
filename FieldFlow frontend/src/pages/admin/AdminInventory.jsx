@@ -28,8 +28,11 @@ const AdminInventory = () => {
   // Form State - Edit Stock
   const [editStockCount, setEditStockCount] = useState(0);
 
-  const handleAddPart = (e) => {
+  const [submitError, setSubmitError] = useState('');
+
+  const handleAddPart = async (e) => {
     e.preventDefault();
+    setSubmitError('');
     const newErrors = {};
     if (!partName) newErrors.partName = 'Part Name is required.';
     if (!sku) newErrors.sku = 'SKU is required.';
@@ -40,16 +43,21 @@ const AdminInventory = () => {
       return;
     }
 
-    addInventoryPart({ partName, category, sku, stock, minStock, price });
+    try {
+      await addInventoryPart({ partName, category, sku, stock, minStock, price });
 
-    // Reset Form
-    setPartName('');
-    setSku('');
-    setStock(10);
-    setMinStock(3);
-    setPrice(500);
-    setErrors({});
-    setAddModalOpen(false);
+      // Reset Form
+      setPartName('');
+      setSku('');
+      setStock(10);
+      setMinStock(3);
+      setPrice(500);
+      setErrors({});
+      setSubmitError('');
+      setAddModalOpen(false);
+    } catch (err) {
+      setSubmitError(err.message || 'Failed to save spare part. Please check values and try again.');
+    }
   };
 
   const handleEditStockSubmit = (e) => {
@@ -234,6 +242,11 @@ const AdminInventory = () => {
         }
       >
         <form className="space-y-4 text-left" onSubmit={handleAddPart}>
+          {submitError && (
+            <div className="p-3 text-xs font-bold text-rose-600 bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/30 rounded-lg">
+              {submitError}
+            </div>
+          )}
           <Input
             label="Spare Part Name"
             required

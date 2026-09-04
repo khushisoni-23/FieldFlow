@@ -35,9 +35,12 @@ const AdminCreateJob = () => {
     }
   }, [customerId, customers]);
 
-  const handleSubmit = (e) => {
+  const [submitError, setSubmitError] = useState('');
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
+    setSubmitError('');
 
     const newErrors = {};
     if (!customerId) newErrors.customerId = 'Please select a customer.';
@@ -51,18 +54,22 @@ const AdminCreateJob = () => {
       return;
     }
 
-    createJob({
-      customerId,
-      serviceType,
-      problemDescription,
-      priority,
-      address,
-      scheduledDate,
-      scheduledTime,
-      technicianId
-    });
+    try {
+      await createJob({
+        customerId,
+        serviceType,
+        problemDescription,
+        priority,
+        address,
+        scheduledDate,
+        scheduledTime,
+        technicianId
+      });
 
-    navigate('/admin/jobs');
+      navigate('/admin/jobs');
+    } catch (err) {
+      setSubmitError(err.message || 'Failed to create job card. Please try again.');
+    }
   };
 
   const serviceOptions = [
@@ -110,6 +117,11 @@ const AdminCreateJob = () => {
       {/* Main card form */}
       <div className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-color)] shadow-xs p-6">
         <form onSubmit={handleSubmit} className="space-y-5">
+          {submitError && (
+            <div className="p-3 text-xs font-bold text-rose-600 bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/30 rounded-lg">
+              {submitError}
+            </div>
+          )}
           
           <Select
             label="Customer Profile"

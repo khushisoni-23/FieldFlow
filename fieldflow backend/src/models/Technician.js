@@ -8,7 +8,7 @@ const technicianSchema = new mongoose.Schema({
   },
   userId: {
     type: String,
-    required: true
+    required: false
   },
   name: {
     type: String,

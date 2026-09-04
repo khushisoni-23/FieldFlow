@@ -20,9 +20,11 @@ const AdminCustomers = () => {
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
   const [errors, setErrors] = useState({});
+  const [submitError, setSubmitError] = useState('');
 
-  const handleAddCustomer = (e) => {
+  const handleAddCustomer = async (e) => {
     e.preventDefault();
+    setSubmitError('');
     const newErrors = {};
     if (!name) newErrors.name = 'Full name is required.';
     if (!phone) newErrors.phone = 'Phone number is required.';
@@ -33,15 +35,20 @@ const AdminCustomers = () => {
       return;
     }
 
-    addCustomer({ name, phone, email, address });
-    
-    // Reset Form
-    setName('');
-    setPhone('');
-    setEmail('');
-    setAddress('');
-    setErrors({});
-    setModalOpen(false);
+    try {
+      await addCustomer({ name, phone, email, address });
+
+      // Reset Form
+      setName('');
+      setPhone('');
+      setEmail('');
+      setAddress('');
+      setErrors({});
+      setSubmitError('');
+      setModalOpen(false);
+    } catch (err) {
+      setSubmitError(err.message || 'Failed to create customer profile. Please try again.');
+    }
   };
 
   const filteredCustomers = (customers || []).filter(c => {
@@ -239,6 +246,11 @@ const AdminCustomers = () => {
         }
       >
         <form className="space-y-4 text-left" onSubmit={handleAddCustomer}>
+          {submitError && (
+            <div className="p-3 text-xs font-bold text-rose-600 bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/30 rounded-lg">
+              {submitError}
+            </div>
+          )}
           <Input
             label="Full Customer Name"
             required

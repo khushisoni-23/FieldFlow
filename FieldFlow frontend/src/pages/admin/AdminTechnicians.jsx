@@ -28,10 +28,11 @@ const AdminTechnicians = () => {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [specialization, setSpecialization] = useState('AC Repair');
-  const [errors, setErrors] = useState({});
+  const [submitError, setSubmitError] = useState('');
 
-  const handleAddTech = (e) => {
+  const handleAddTech = async (e) => {
     e.preventDefault();
+    setSubmitError('');
     const newErrors = {};
     if (!name) newErrors.name = 'Full name is required.';
     if (!email) newErrors.email = 'Email address is required.';
@@ -42,19 +43,24 @@ const AdminTechnicians = () => {
       return;
     }
 
-    addTechnician({ name, email, phone, specialization });
+    try {
+      await addTechnician({ name, email, phone, specialization });
 
-    // Reset Form
-    setName('');
-    setEmail('');
-    setPhone('');
-    setErrors({});
-    setModalOpen(false);
+      // Reset Form
+      setName('');
+      setEmail('');
+      setPhone('');
+      setErrors({});
+      setSubmitError('');
+      setModalOpen(false);
 
-    // Show toast
-    setToastMessage("Technician added successfully.");
-    setToastOpen(true);
-    setTimeout(() => setToastOpen(false), 3000);
+      // Show toast
+      setToastMessage("Technician onboarded successfully.");
+      setToastOpen(true);
+      setTimeout(() => setToastOpen(false), 3000);
+    } catch (err) {
+      setSubmitError(err.message || 'Failed to onboard technician. Please try again.');
+    }
   };
 
   const handleDeleteClick = (tech) => {
@@ -300,6 +306,11 @@ const AdminTechnicians = () => {
         }
       >
         <form className="space-y-4 text-left" onSubmit={handleAddTech}>
+          {submitError && (
+            <div className="p-3 text-xs font-bold text-rose-600 bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/30 rounded-lg">
+              {submitError}
+            </div>
+          )}
           <Input
             label="Full Technician Name"
             required

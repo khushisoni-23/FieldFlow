@@ -1,12 +1,13 @@
 import axios from 'axios';
 
-// Base URL configured from environment variable (Vite prefix required)
+// API URL: Uses VITE_API_URL env var. Set this to your Vercel backend URL in production.
+// Locally defaults to http://localhost:5001/api
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5001/api',
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 15000,
+  timeout: 30000, // 30s for Vercel serverless cold starts
 });
 
 // Request interceptor to automatically attach authorization headers

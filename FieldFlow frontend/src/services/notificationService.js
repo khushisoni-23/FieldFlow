@@ -1,7 +1,7 @@
 import api from './api';
+import { USE_API } from './config';
 import { mockNotifications } from '../data/mockData';
 
-const USE_API = import.meta.env.VITE_USE_API === 'true';
 const STORAGE_KEY = 'ff_mock_notifications';
 
 if (!localStorage.getItem(STORAGE_KEY)) {

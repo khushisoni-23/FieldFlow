@@ -75,7 +75,7 @@ const authService = {
     }
 
     const { password: _, ...userWithoutPassword } = newUser;
-    return userWithoutPassword;
+    return { ...userWithoutPassword, user: userWithoutPassword };
   },
 
   getProfile: async (userId) => {

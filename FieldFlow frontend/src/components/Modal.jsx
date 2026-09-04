@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 
-export default function Modal({ isOpen, onClose, title, children, size = 'md', noPadding = false }) {
+export default function Modal({ isOpen, onClose, title, children, footerActions, size = 'md', noPadding = false }) {
   const overlayRef = useRef(null);
 
   useEffect(() => {
@@ -76,6 +76,16 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md', n
         <div className={`overflow-y-auto ${noPadding ? '' : 'p-6'} flex-1`}>
           {children}
         </div>
+
+        {/* Footer — shown only when footerActions are provided */}
+        {footerActions && (
+          <div
+            className="flex items-center justify-end gap-3 px-6 py-4 shrink-0"
+            style={{ borderTop: '1px solid var(--border-color)' }}
+          >
+            {footerActions}
+          </div>
+        )}
       </div>
     </div>
   );

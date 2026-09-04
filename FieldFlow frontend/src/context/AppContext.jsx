@@ -6,11 +6,11 @@ import { technicianService } from '../services/technicianService';
 import { inventoryService } from '../services/inventoryService';
 import { paymentService } from '../services/paymentService';
 import { notificationService } from '../services/notificationService';
+import { USE_API } from '../services/config';
 import { en } from '../i18n/en';
 import { hi } from '../i18n/hi';
 
 const translations = { en, hi };
-const USE_API = import.meta.env.VITE_USE_API === 'true';
 
 export const AppContext = createContext();
 
@@ -108,7 +108,7 @@ export const AppProvider = ({ children }) => {
       } catch (err) {
         console.error('Session restoration failed:', err);
         // Safely clear credentials if backend throws token errors
-        if (import.meta.env.VITE_USE_API === 'true') {
+        if (USE_API) {
           localStorage.removeItem('ff_token');
           localStorage.removeItem('ff_user');
           setCurrentUser(null);
