@@ -17,10 +17,23 @@ const reportRoutes = require('./routes/reportRoutes');
 
 const app = express();
 
-// CORS configuration - restricted to VITE server origin
-const corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:5173';
+// CORS configuration - restricted to allowed frontend origins
+const allowedOrigins = [
+  'https://field-flow-nine.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3000'
+];
+if (process.env.CORS_ORIGIN) {
+  process.env.CORS_ORIGIN.split(',').forEach(o => {
+    const trimmed = o.trim();
+    if (trimmed && !allowedOrigins.includes(trimmed)) {
+      allowedOrigins.push(trimmed);
+    }
+  });
+}
+
 app.use(cors({
-  origin: corsOrigin,
+  origin: allowedOrigins,
   credentials: true
 }));
 
