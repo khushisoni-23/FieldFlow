@@ -19,7 +19,16 @@
       "dest": "/api/index.js"
     },
     {
-      "handle": "filesystem"
+      "src": "/FieldFlow frontend/(.*)",
+      "dest": "/FieldFlow frontend/$1"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/FieldFlow frontend/assets/$1"
+    },
+    {
+      "src": "/favicon.svg",
+      "dest": "/FieldFlow frontend/favicon.svg"
     },
     {
       "src": "/(.*)",
